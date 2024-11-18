@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   preview:
-    if: ${{ github.repository_owner == 'Slimefun' && github.event.workflow_run.conclusion == 'success' }}
+    # if: ${{ github.repository_owner == 'Slimefun' && github.event.workflow_run.conclusion == 'success' }}
     name: Build and Publish the jar
     runs-on: ubuntu-latest
 
