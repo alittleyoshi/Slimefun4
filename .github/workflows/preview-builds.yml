@@ -1,10 +1,7 @@
 name: Preview builds
 
 on:
-  workflow_run:
-    workflows: ["Pull Request"]
-    types:
-      - completed
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -58,25 +55,35 @@ jobs:
           rm preview.zip
           mv 'Slimefun vPreview Build #${{ env.PR_NUMBER }}-${{ env.COMMIT_HASH }}.jar' preview.jar
 
-      - name: Upload to preview service
-        run: |
-          curl -X POST \
-            -H 'Authorization: ${{ secrets.PUBLISH_TOKEN }}' \
-            -H "X-Checksum: $(sha256sum 'preview.jar' | awk '{print $1}')" \
-            --data-binary '@preview.jar' \
-            https://preview-builds.walshy.dev/upload/Slimefun/${{ env.PR_NUMBER }}/${{ env.COMMIT_HASH }}
+      # - name: Upload to preview service
+      #   run: |
+      #     curl -X POST \
+      #       -H 'Authorization: ${{ secrets.PUBLISH_TOKEN }}' \
+      #       -H "X-Checksum: $(sha256sum 'preview.jar' | awk '{print $1}')" \
+      #       --data-binary '@preview.jar' \
+      #       https://preview-builds.walshy.dev/upload/Slimefun/${{ env.PR_NUMBER }}/${{ env.COMMIT_HASH }}
 
-      - name: Post comment
-        uses: marocchino/sticky-pull-request-comment@v2
+      # - name: Post comment
+      #   uses: marocchino/sticky-pull-request-comment@v2
+      #   with:
+      #     number: ${{ env.PR_NUMBER }}
+      #     message: |
+      #       ### Slimefun preview build
+
+      #       A Slimefun preview build is available for testing!
+      #       Commit: ${{ env.COMMIT_HASH }}
+
+      #       https://preview-builds.walshy.dev/download/Slimefun/${{ env.PR_NUMBER }}/${{ env.COMMIT_HASH }}
+
+      #       > **Note**: This is not a supported build and is only here for the purposes of testing.
+      #       > Do not run this on a live server and do not report bugs anywhere but this PR!
+
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v4.4.3
         with:
-          number: ${{ env.PR_NUMBER }}
-          message: |
-            ### Slimefun preview build
+          # Artifact name
+          name: preview.jar
+          # A file, directory or wildcard pattern that describes what to upload
+          path: "@preview.jar"
 
-            A Slimefun preview build is available for testing!
-            Commit: ${{ env.COMMIT_HASH }}
-
-            https://preview-builds.walshy.dev/download/Slimefun/${{ env.PR_NUMBER }}/${{ env.COMMIT_HASH }}
-
-            > **Note**: This is not a supported build and is only here for the purposes of testing.
-            > Do not run this on a live server and do not report bugs anywhere but this PR!
+                
